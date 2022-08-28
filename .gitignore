@@ -1,0 +1,10 @@
+# pychache files
+*.pyc
+
+# network training progress files
+*.pt
+*.csv
+
+# datasets
+*.npy
+*.npz
