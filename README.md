@@ -2,7 +2,7 @@
 
 For detailed information about WaveY-Net, please see the [ACS Photonics article](https://pubs.acs.org/doi/abs/10.1021/acsphotonics.2c00876) and the [Supporting Information](https://pubs.acs.org/doi/abs/10.1021/acsphotonics.2c00876#notes-2).
 
-[WaveY-Net Figure 1a](https://github.com/jonfanlab/waveynet/blob/main/figures/waveynet_fig1.png?raw=true)
+![WaveY-Net Figure 1a](https://github.com/jonfanlab/waveynet/blob/main/figures/waveynet_fig1.png?raw=true)
 
 ## How to Run
 
