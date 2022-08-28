@@ -1,7 +1,8 @@
 # WaveY-Net
 
-For detailed information about WaveY-Net, please see the ACS Photonics article and the Supporting Information:
-https://pubs.acs.org/doi/abs/10.1021/acsphotonics.2c00876
+For detailed information about WaveY-Net, please see the [ACS Photonics article](https://pubs.acs.org/doi/abs/10.1021/acsphotonics.2c00876) and the [Supporting Information](https://pubs.acs.org/doi/abs/10.1021/acsphotonics.2c00876#notes-2).
+
+[WaveY-Net Figure 1a](https://github.com/jonfanlab/waveynet/blob/main/figures/waveynet_fig1.png?raw=true)
 
 ## How to Run
 
@@ -14,10 +15,10 @@ docker pull rclupoiu/surrogate:latest_torch
 
 *What is a Docker image?* It is a file that contains instructions to locally build a Docker container.
 
-*What is a Docker container?* According to https://www.docker.com/resources/what-container/:
+*What is a Docker container?* According to [the Docker documentation](https://www.docker.com/resources/what-container/),
 "A container is a standard unit of software that packages up code and all its dependencies so the application runs quickly and reliably from one computing environment to another. A Docker container image is a lightweight, standalone, executable package of software that includes everything needed to run an application: code, runtime, system tools, system libraries and settings."
 
-*In short, the Docker container locally builds an environment to allow you to reliably run the WaveY-Net code.*
+**In short, the Docker container locally builds an environment to allow you to reliably run the WaveY-Net code.**
 
 To build the Docker container, link it to the directory where you pulled this GitHub repo, enable GPU acceleration in your Docker container, and open an interactive bash shell:
 ```
@@ -60,7 +61,8 @@ The training script outputs the trained weights of the neural network, along wit
 
 ## Citation
 If you use this code or data for your research, please cite:
+
 [High Speed Simulation and Freeform Optimization of Nanophotonic Devices with Physics-Augmented Deep Learning<br>](https://pubs.acs.org/doi/abs/10.1021/acsphotonics.2c00876)
-Mingkun Chen, Robert Lupoiu, Chenkai Mao, Der-Han Huang, Jiaqi Jiang, Philippe Lalanne, and Jonathan A. Fan*
+Mingkun Chen&dagger;, Robert Lupoiu&dagger;, Chenkai Mao&dagger;, Der-Han Huang&dagger;, Jiaqi Jiang, Philippe Lalanne, and Jonathan A. Fan*
 
 *jonfan@stanford.edu
