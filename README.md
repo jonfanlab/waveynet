@@ -40,6 +40,8 @@ Please see the official [WaveY-Net webpage on Metanet](http://metanet.stanford.e
 
 By default, *simulation_dataset.py* downloads the training and testing data from Metanet each time the script is run. If you would like a local copy of the data to bypass the downloading step and speed up experimentation, set the `--local_data` script argument to `True` after [manually downloading the data from Metanet](http://metanet.stanford.edu/search/waveynet-study/) and placing the data files in the same directory as the *simulation_dataset.py* script.
 
+If you have a slower internet download speed, it is highly recommended that you [manually download the data from Metanet](http://metanet.stanford.edu/search/waveynet-study/) before running the training script. You may otherwise have a data download overhead on the order of hours of runtime each time you run the code.
+
 ### Training WaveY-Net
 
 From the interactive Docker container bash shell, use the following command to run the training script. Pass any arguments needed to customize the script for your needs.

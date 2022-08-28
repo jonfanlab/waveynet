@@ -20,13 +20,19 @@ class SimulationDataset(Dataset):
         n_sub=1.45
 
         print("Loading training data...")
-
+        print("Note: The training and test datasets are very large, which can take "\
+               "on the order of hours to complete, depending on your internet download "\
+               "speed. If you have a slower internet download speed, consider downloading the "\
+               "data locally from http://metanet.stanford.edu/search/waveynet-study/ so "\
+               "that you do not have to re-download the data each time you run the code."\
+               "See the README file for more information.")
         #load the training data, either locally or from Metanet, as specified by
         #the boolean args.local_data
         if(local_data):
             train_data = np.load(data_folder+'/train_ds.npz')
         else:
-            response = requests.get('http://metanet.stanford.edu/static/search/waveynet/data/train_ds.npz')
+            response = requests.get('http://metanet.stanford.edu/static/search/waveynet/'\
+                                    'data/train_ds.npz')
             response.raise_for_status()
             train_data = np.load(io.BytesIO(response.content))
 
@@ -37,7 +43,8 @@ class SimulationDataset(Dataset):
         if(local_data):
             test_data = np.load(data_folder+'/test_ds.npz')
         else:
-            response = requests.get('http://metanet.stanford.edu/static/search/waveynet/data/test_ds.npz')
+            response = requests.get('http://metanet.stanford.edu/static/search/waveynet/'\
+                                    'data/test_ds.npz')
             response.raise_for_status()
             test_data = np.load(io.BytesIO(response.content))
 
