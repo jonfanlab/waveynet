@@ -15,10 +15,10 @@ class UNet(nn.Module):
         '''
         self.alpha = args.alpha
         config = []
+        # kernel_size = 2 if block==args.num_down_conv-1 else 3
+        kernel_size = 3
         for block in range(args.num_down_conv):
 
-            # kernel_size = 2 if block==args.num_down_conv-1 else 3
-            kernel_size = 3
             out_channels = (2**block)*args.hidden_dim
             if(block == 0):
                 config += [
@@ -104,7 +104,7 @@ class UNet(nn.Module):
         self.lr_scheduler = None # will be initialized in waveynet_trainer.py
         self.residual_terms = None # to store the residual connect for addition later
 
-        for i, (name, param) in enumerate(self.config):
+        for name, param in self.config:
             if name == 'conv2d':
                 # [ch_out, ch_in, kernelsz, kernelsz]
                 w = nn.Parameter(torch.ones(*param[:4]), requires_grad=True)
@@ -144,12 +144,12 @@ class UNet(nn.Module):
         for name, param in self.config:
             if name == 'conv2d':
                 tmp = 'conv2d:(ch_in:%d, ch_out:%d, k:%dx%d, stride:%d, padding:%d)'\
-                      %(param[1], param[0], param[2], param[3], param[4], param[5],)
+                          %(param[1], param[0], param[2], param[3], param[4], param[5],)
                 info += tmp + '\n'
 
             elif name == 'conv2d_b':
                 tmp = 'conv2d:(ch_in:%d, ch_out:%d, k:%dx%d, stride:%d, padding:%d)'\
-                      %(param[1], param[0], param[2], param[3], param[4], param[5],)
+                          %(param[1], param[0], param[2], param[3], param[4], param[5],)
                 info += tmp + '\n'
 
             elif name == 'leakyrelu':
@@ -160,8 +160,8 @@ class UNet(nn.Module):
                 tmp = 'max_pool2d:(k:%s, stride:%s, padding:%d)'%(param[0], param[1], param[2])
                 info += tmp + '\n'
             elif name in ['flatten', 'tanh', 'relu', 'upsample', 'reshape', 'sigmoid',\
-                          'use_logits', 'bn', 'residual']:
-                tmp = name + ':' + str(tuple(param))
+                              'use_logits', 'bn', 'residual']:
+                tmp = f'{name}:{tuple(param)}'
                 info += tmp + '\n'
             else:
                 raise NotImplementedError
@@ -183,7 +183,14 @@ class UNet(nn.Module):
 
         blocks = []
         for name, param in self.config:
-            if name == 'conv2d':
+            if name == 'bn':
+                w, b = vars[idx], vars[idx + 1]
+                running_mean, running_var = self.vars_bn[bn_idx], self.vars_bn[bn_idx+1]
+                x = F.batch_norm(x, running_mean, running_var, weight=w, bias=b, training=bn_training)
+                idx += 2
+                bn_idx += 2
+
+            elif name == 'conv2d':
                 # periodic padding
                 kernel_width = param[2]
                 if kernel_width % 2:
@@ -222,15 +229,15 @@ class UNet(nn.Module):
                 x = F.conv2d(x_pad, w, b, stride=param[4], padding=0)
                 idx += 2
 
-            elif name == 'bn':
-                w, b = vars[idx], vars[idx + 1]
-                running_mean, running_var = self.vars_bn[bn_idx], self.vars_bn[bn_idx+1]
-                x = F.batch_norm(x, running_mean, running_var, weight=w, bias=b, training=bn_training)
-                idx += 2
-                bn_idx += 2
-
             elif name == 'leakyrelu':
                 x = F.leaky_relu(x, negative_slope=param[0], inplace=param[1])
+
+            elif name == 'max_pool2d':
+                blocks.append(x)
+                x = F.max_pool2d(x, param[0], stride=param[1], padding=param[2])
+
+            elif name == 'residual':
+                x = x + self.residual_terms
 
             elif name == 'upsample':
                 if first_upsample:
@@ -239,13 +246,6 @@ class UNet(nn.Module):
                 shortcut= blocks.pop()
                 x = F.interpolate(x, size=(shortcut.shape[2],shortcut.shape[3]), mode='nearest')
                 x = torch.cat([shortcut,x], dim=1) # batch, channels, h, w
-
-            elif name == 'residual':
-                x = x + self.residual_terms
-
-            elif name == 'max_pool2d':
-                blocks.append(x)
-                x = F.max_pool2d(x, param[0], stride=param[1], padding=param[2])
 
             else:
                 print(name)

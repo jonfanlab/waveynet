@@ -147,8 +147,15 @@ def H_to_H(Hz_R: np.array, Hz_I: np.array, dL: float, omega: float, eps_grid: np
 
     FD_Ex = Hz_to_Ex(Hz_R, Hz_I, dL, omega, eps_grid, eps_0)
     FD_Ez = Hz_to_Ey(Hz_R, Hz_I, dL, omega, eps_grid, eps_0)
-    FD_H = E_to_Hz(FD_Ez[:, 0, :-1], FD_Ez[:, 1, :-1], FD_Ex[:, 0], FD_Ex[:, 1], dL, omega, mu_0)
-    return FD_H
+    return E_to_Hz(
+        FD_Ez[:, 0, :-1],
+        FD_Ez[:, 1, :-1],
+        FD_Ex[:, 0],
+        FD_Ex[:, 1],
+        dL,
+        omega,
+        mu_0,
+    )
 
 def regConstScheduler(epoch, args, last_epoch_data_loss, last_epoch_physical_loss):
     '''
@@ -216,14 +223,16 @@ def main(args):
 
     test_loader = DataLoader(test_ds, batch_size=args.batch_size, shuffle=True, num_workers=0)
 
-    train_mean = 0
-    test_mean = 0
+    train_mean = sum(
+        torch.mean(torch.abs(sample_batched["field"]))
+        for sample_batched in train_loader
+    )
 
-    # first get the mean-absolute-field value:
-    for sample_batched in train_loader:
-        train_mean += torch.mean(torch.abs(sample_batched["field"]))
-    for sample_batched in test_loader:
-        test_mean += torch.mean(torch.abs(sample_batched["field"]))
+    test_mean = sum(
+        torch.mean(torch.abs(sample_batched["field"]))
+        for sample_batched in test_loader
+    )
+
     train_mean /= len(train_loader)
     test_mean /= len(test_loader)
 
